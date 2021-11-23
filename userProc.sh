@@ -170,9 +170,10 @@ else
           Error_message
           exit 1
         fi
+        
         for i in "$user_set";do
           shift 
-          users_set[i]=($1)
+          users_set=("$1")
         done
         
         shift
