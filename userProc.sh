@@ -17,8 +17,8 @@ pid=0
 c_variable=0
 inv=0
 # Conjunto de usuarios // array vacia
-users_set=()
-variable_users=$(for i in "${users_set[@]}"; do printf $i; done)
+declare -a users_set=()
+variable_users=$(for i in "${users_set[@]}"; do echo $i; done)
 # Variable a imprimir
 my_variable=
 
@@ -61,19 +61,19 @@ user_list(){
 
 # Funciones cuando se filtra por usuarios conectados
 usr_(){
-  my_variable=$(ps -eo times,user,group,uid,pid | grep -v /snap | tail -n+2 | awk '{if ( $1>N ) print $0}' | tr -s ' ' ' ' | awk -F ' ' '{a[$2]} END{for (i in a) print i}' | sort -u | grep "$variable_who")
+  my_variable=$(ps -eo user,times,group,uid,pid | grep -v /snap | tail -n+2 | awk '{if ( $1>N ) print $0}' | sort -k 1 | uniq -w 3 | sort -n | grep "$variable_who")
 }
 usr_count(){
-  my_variable=$(ps -eo user,times,group,uid,pid | grep -v /snap | tail -n+2 | awk '{if ( $1>N ) print $0}' | tr -s ' ' ' ' | uniq -c -w 3 | sort -n | grep "$variable_who")
+  my_variable=$(ps -eo user,times,group,uid,pid | grep -v /snap | tail -n+2 | awk '{if ( $1>N ) print $0}' | sort -k 1 | uniq -c -w 3 | sort -n | grep "$variable_who")
 }
 usr_count_pid(){
-  my_variable=$(ps -eo user,times,group,uid,pid | awk '{if ( $2>N ) print $0}' | grep "$variable_who" | sort -k 1 | uniq -c -w 3 | sort -n -k 6)
+  my_variable=$(ps -eo user,times,group,uid,pid | awk '{if ( $2>N ) print $0}' | sort -k 1 | uniq -c -w 3 | sort -n -k 6 | grep "$variable_who")
 }
 usr_count_pid_inv(){
   my_variable=$(ps -eo user,times,group,uid,pid | awk '{if ( $2>N ) print $0}' | grep "$variable_who" | sort -k 1 | uniq -c -w 3 | sort -n -k 6 -r)
 }
 usr_count_inv(){
-  my_variable=$(ps -eo etimes,user,group | grep -v /snap | tail -n+2 | awk '{if ( $1>N ) print $0}' | tr -s ' ' ' ' | awk -F ' ' '{a[$2] += 1} END{for (i in a) print a[i], i}' | sort -n -r | grep "$variable_who")
+  my_variable=$(ps -eo user,times,group,uid,pid | grep -v /snap | tail -n+2 | awk '{if ( $1>N ) print $0}' |sort -k 1 | uniq -c -w 3 | sort -n -r | grep "$variable_who")
 }
 usr_count_c(){
   my_variable=$(ps -eo user,times,group,uid,pid | awk '{if ( $2>N ) print $0}' | grep "$variable_who" | sort -k 1 | uniq -c -w 3 | sort -n -k 1)
@@ -82,10 +82,10 @@ usr_count_c_inv(){
   my_variable=$(ps -eo user,times,group,uid,pid | awk '{if ( $2>N ) print $0}' | grep "$variable_who" | sort -k 1 | uniq -c -w 3 | sort -n -k 1 -r)
 }
 usr_pid(){
-  my_variable=$(ps -eo etimes,user,group,uid,pid | grep -v /snap | tail -n+2 | awk '{if ( $1>"$N" ) print $0}' | tr -s ' ' ' ' | awk -F ' ' '{a[$2] = $5} END{for (i in a) print i, a[i]}' | sort -u | cut -d ' ' -f1 | grep "$variable_who")
+  my_variable=$(ps -eo user,times,group,uid,pid | grep -v /snap | tail -n+2 | awk '{if ( $1>"$N" ) print $0}' | grep "$variable_who" | sort -k 5 -n)
 }
 usr_pid_inv(){
-  my_variable=$(ps -eo etimes,user,group,uid,pid | grep -v /snap | tail -n+2 | awk '{if ( $1>"$N" ) print $0}' | tr -s ' ' ' ' | awk -F ' ' '{a[$2] = $5} END{for (i in a) print i, a[i]}' | sort -u -r | cut -d ' ' -f1 | grep "$variable_who")
+  my_variable=$(ps -eo user,times,group,uid,pid | grep -v /snap | tail -n+2 | awk '{if ( $1>"$N" ) print $0}' | sort -k 5 -n -r | grep "$variable_who")
 }
 usr_c(){
   my_variable=$(ps -eo user,times,group,uid,pid | awk '{if ( $2>N ) print $0}' | grep "$variable_who" | sort -k 1 | uniq -c -w 3 | sort -n -k 1)
@@ -94,13 +94,12 @@ usr_c_inv(){
   my_variable=$(ps -eo user,times,group,uid,pid | awk '{if ( $2>N ) print $0}' | grep "$variable_who" | sort -k 1 | uniq -c -w 3 | sort -n -k 1 -r)
 }
 usr_inv(){
-  my_variable=$(ps -eo etimes,user,group,uid,pid | grep -v /snap | tail -n+2 | awk '{if ( $1>N ) print $0}' | tr -s ' ' ' ' | awk -F ' ' '{a[$2]} END{for (i in a) print i}' | sort -u -r | grep "$variable_who")
+  my_variable=$(ps -eo user,times,group,uid,pid | grep -v /snap | tail -n+2 | awk '{if ( $1>N ) print $0}' | sort -u -r | grep "$variable_who")
 }
 
 # Funciones cuando se filtra por usuarios especificados
 u_(){
-  echo "$users_set"
-  # my_variable=$(ps -eo times,user,group,uid,pid | grep -v /snap | tail -n+2 | awk '{if ( $1>N ) print $0}' | tr -s ' ' ' ' | awk -F ' ' '{a[$2]} END{for (i in a) print i}' | sort -u | grep "$variable_users")
+  my_variable=$(ps -eo times,user,group,uid,pid | grep -v /snap | tail -n+2 | awk '{if ( $1>N ) print $0}' | tr -s ' ' ' ' | awk -F ' ' '{a[$2]} END{for (i in a) print i}' | sort -u | grep "$variable_users")
 }
 u_count(){
   my_variable=$(ps -eo times,user,group | grep -v /snap | tail -n+2 | awk '{if ( $1>N ) print $0}' | tr -s ' ' ' ' | awk -F ' ' '{a[$2] += 1} END{for (i in a) print a[i], i}' | sort -n | grep "$variable_users")
@@ -134,6 +133,37 @@ u_c_inv(){
 }
 u_inv(){
   my_variable=$(ps -eo etimes,user,group,uid,pid | grep -v /snap | tail -n+2 | awk '{if ( $1>N ) print $0}' | tr -s ' ' ' ' | awk -F ' ' '{a[$2]} END{for (i in a) print i}' | sort -u -r | grep "$variable_users")
+}
+
+proc_count(){
+  my_variable=$(ps -eo user,times,group,uid,pid | grep -v /snap | tail -n+2 | awk '{if ( $1>N ) print $0}' | sort -k 1 | uniq -c -w 3 | sort -n)
+}
+proc_count_pid(){
+  my_variable=$(ps -eo user,times,group,uid,pid | grep -v /snap | tail -n+2 | awk '{if ( $2>N ) print $0}' | sort -k 1 | uniq -c -w 3 | sort -n -k 6)
+}
+proc_count_pid_inv(){
+  my_variable=$(ps -eo user,times,group,uid,pid | grep -v /snap | tail -n+2 | awk '{if ( $2>N ) print $0}' | sort -k 1 | uniq -c -w 3 | sort -n -k 6 -r)
+}
+proc_count_inv(){
+  my_variable=$(ps -eo user,times,group,uid,pid | grep -v /snap | tail -n+2 | awk '{if ( $1>N ) print $0}' |sort -k 1 | uniq -c -w 3 | sort -n -r)
+}
+proc_count_c(){
+  my_variable=$(ps -eo user,times,group,uid,pid | grep -v /snap | tail -n+2 | awk '{if ( $2>N ) print $0}' | sort -k 1 | uniq -c -w 3 | sort -n -k 1)
+}
+proc_count_c_inv(){
+  my_variable=$(ps -eo user,times,group,uid,pid | grep -v /snap | tail -n+2 | awk '{if ( $2>N ) print $0}' | sort -k 1 | uniq -c -w 3 | sort -n -k 1 -r)
+}
+proc_pid(){
+  my_variable=$(ps -eo user,times,group,uid,pid | grep -v /snap | tail -n+2 | awk '{if ( $1>"$N" ) print $0}' | sort -k 5 -n)
+}
+proc_pid_inv(){
+  my_variable=$(ps -eo user,times,group,uid,pid | grep -v /snap | tail -n+2 | awk '{if ( $1>"$N" ) print $0}' | sort -k 5 -n -r)
+}
+proc_c(){
+  my_variable=$(ps -eo user,times,group,uid,pid | grep -v /snap | tail -n+2 | awk '{if ( $2>N ) print $0}' | sort -k 1 | uniq -c -w 3 | sort -n -k 1)
+}
+proc_c_inv(){
+  my_variable=$(ps -eo user,times,group,uid,pid | grep -v /snap | tail -n+2 | awk '{if ( $2>N ) print $0}' | sort -k 1 | uniq -c -w 3 | sort -n -k 1 -r)
 }
 
 # Menú
@@ -171,8 +201,8 @@ else
           exit 1
         fi
         while [ "$2" != "" ]; do
+          users_set=($2 "${users_set[@]}")
           shift
-          users_set+=("$1" "${users_set[@]}")
         done
         shift
         ;;
@@ -253,7 +283,7 @@ if [[ "$u_variable" == 1 && "$usr" == 0 ]]; then
     fi
     if [[ "$c_variable" == 1 && "$pid" == 0 ]]; then
       u_count_c
-      if [ "$inv" == 1]; then
+      if [ "$inv" == 1 ]; then
         u_count_c_inv
       fi
     fi
@@ -272,6 +302,39 @@ if [[ "$u_variable" == 1 && "$usr" == 0 ]]; then
   fi
   if [ "$inv" == 1 ] && [ "$c_variable" == 0 ] && [ "$pid" == 0 ] && [ "$count" == 0 ]; then
     u_inv
+  fi
+fi
+
+if [[ "$u_variable" == 0 && "$usr" == 0 ]]; then
+  if [ "$count" == 1 ]; then
+    proc_count
+    if [[ "$pid" == 1 && "$c_variable" == 0 ]]; then
+      proc_count_pid
+      if [ "$inv" == 1 ]; then
+        proc_count_pid_inv
+      fi
+    fi
+    if [[ "$inv" == 1 && "$pid" == 0 && "$c_variable" == 0 ]]; then
+      proc_count_inv
+    fi
+    if [[ "$c_variable" == 1 && "$pid" == 0 ]]; then
+      proc_count_c
+      if [ "$inv" == 1 ]; then
+        proc_count_c_inv
+      fi
+    fi
+  fi
+  if [ "$pid" == 1 ] && [ "$count" == 0 ] && [ "$c_variable" == 0 ]; then
+    proc_pid
+    if [ "$inv" == 1 ]; then
+      proc_pid_inv
+    fi
+  fi
+  if [ "$pid" == 0 ] && [ "$count" == 0 ] && [ "$c_variable" == 1 ]; then
+    proc_c
+    if [ "$inv" == 1]; then
+      proc_c_inv
+    fi
   fi
 fi
 
