@@ -170,9 +170,9 @@ else
           Error_message
           exit 1
         fi
-        for i in "$user_set";do 
-          users_set=($2 "${users_set[@]}")
-          shift
+        for i in "$user_set";do
+          shift 
+          users_set[i]=($1)
         done
         
         shift
