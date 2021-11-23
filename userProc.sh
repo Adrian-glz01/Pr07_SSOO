@@ -64,7 +64,7 @@ usr_(){
   my_variable=$(ps -eo times,user,group,uid,pid | grep -v /snap | tail -n+2 | awk '{if ( $1>N ) print $0}' | tr -s ' ' ' ' | awk -F ' ' '{a[$2]} END{for (i in a) print i}' | sort -u | grep "$variable_who")
 }
 usr_count(){
-  my_variable=$(ps -eo times,user,group | grep -v /snap | tail -n+2 | awk '{if ( $1>N ) print $0}' | tr -s ' ' ' ' | awk -F ' ' '{a[$2] += 1} END{for (i in a) print a[i], i}' | sort -n | grep "$variable_who")
+  my_variable=$(ps -eo user,times,group,uid,pid | grep -v /snap | tail -n+2 | awk '{if ( $1>N ) print $0}' | tr -s ' ' ' ' | uniq -c -w 3 | sort -n | grep "$variable_who")
 }
 usr_count_pid(){
   my_variable=$(ps -eo user,times,group,uid,pid | awk '{if ( $2>N ) print $0}' | grep "$variable_who" | sort -k 1 | uniq -c -w 3 | sort -n -k 6)
@@ -169,7 +169,7 @@ else
           Error_message
           exit 1
         else 
-          while [ "$2" != "-*" ]; do
+          while [ "$1" != "-*" ]; do
             shift
             users_set=($1 "${users_set[@]}")
           done
@@ -197,14 +197,13 @@ else
         exit 1
         ;;
     esac
-    shift
   done
 fi
 
 
-if [[ "$usr" == 1 && "$u_variable" == 0 ]]; then
+if [[ "$usr" -eq 1 && "$u_variable" -eq 0 ]]; then
   usr_
-  if [ "$count" == 1 ]; then
+  if [[ "$count" -eq 1 && "$usr" -eq 1 ]]; then
     usr_count
     if [[ "$pid" == 1 && "$c_variable" == 0 ]]; then
       usr_count_pid
@@ -230,7 +229,7 @@ if [[ "$usr" == 1 && "$u_variable" == 0 ]]; then
   fi
   if [ "$c_variable" == 1 ] && [ "$pid" == 0 ] && [ "$count" == 0 ]; then
     usr_c
-    if [ "$inv" == 1]; then
+    if [ "$inv" == 1 ]; then
       usr_c_inv
     fi
   fi
