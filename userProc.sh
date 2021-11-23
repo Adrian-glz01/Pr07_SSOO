@@ -18,14 +18,14 @@ c_variable=0
 inv=0
 # Conjunto de usuarios // array vacia
 users_set=()
-variable_users=$(for i in "${users_set[@]}"; do printf $i )
+variable_users=$(for i in "${users_set[@]}"; do printf $i; done)
 # Variable a imprimir
-my_variable=""
+my_variable=
 
 # Funcion que imprime los distintos parametros que se pueden ejecutar en nuestro script 
 Usage(){
   printf "Usage: userProc [-parametros]\n"
-  printf "-->Params:\n"
+  printf "Parametros:\n"
   printf "[-t N]: Indica el tiempo a partir del que se mostraran los procesos.\n"
   printf "[-usr]: Muestra los usuarios conectados actualmente al sistema.\n"
   printf "[-u [usuarios]+ ]: Seleccionar usuarios a mostrar.\n"
@@ -37,7 +37,7 @@ Usage(){
 
 # Funcion que muestra un mensaje de error en caso de que el parametro sea erróneo
 Error_message(){
-  echo -n "Parametro invalido, pruebe de nuevo o use [-h o --help] par mas informacion."
+  printf  "Parametro invalido, pruebe de nuevo o use [-h o --help] par mas informacion.\n"
 }
 
 user_list(){
@@ -79,7 +79,7 @@ usr_count_c(){
   my_variable=$(ps -eo user,times,group,uid,pid | awk '{if ( $2>N ) print $0}' | grep "$variable_who" | sort -k 1 | uniq -c -w 3 | sort -n -k 1)
 }
 usr_count_c_inv(){
-  my_variable=my_variable=$(ps -eo user,times,group,uid,pid | awk '{if ( $2>N ) print $0}' | grep "$variable_who" | sort -k 1 | uniq -c -w 3 | sort -n -k 1 -r)
+  my_variable=$(ps -eo user,times,group,uid,pid | awk '{if ( $2>N ) print $0}' | grep "$variable_who" | sort -k 1 | uniq -c -w 3 | sort -n -k 1 -r)
 }
 usr_pid(){
   my_variable=$(ps -eo etimes,user,group,uid,pid | grep -v /snap | tail -n+2 | awk '{if ( $1>"$N" ) print $0}' | tr -s ' ' ' ' | awk -F ' ' '{a[$2] = $5} END{for (i in a) print i, a[i]}' | sort -u | cut -d ' ' -f1 | grep "$variable_who")
@@ -94,7 +94,7 @@ usr_c_inv(){
   my_variable=$(ps -eo user,times,group,uid,pid | awk '{if ( $2>N ) print $0}' | grep "$variable_who" | sort -k 1 | uniq -c -w 3 | sort -n -k 1 -r)
 }
 usr_inv(){
-  my_variable=$(ps -eo etimes,user,group,uid,pid | grep -v /snap | tail -n+2 | awk '{if ( $1>"$N" ) print $0}' | tr -s ' ' ' ' | awk -F ' ' '{a[$2]} END{for (i in a) print i}' | sort -u -r | grep "$variable_who")
+  my_variable=$(ps -eo etimes,user,group,uid,pid | grep -v /snap | tail -n+2 | awk '{if ( $1>N ) print $0}' | tr -s ' ' ' ' | awk -F ' ' '{a[$2]} END{for (i in a) print i}' | sort -u -r | grep "$variable_who")
 }
 
 # Funciones cuando se filtra por usuarios especificados
@@ -117,7 +117,7 @@ u_count_c(){
   my_variable=$(ps -eo user,times,group,uid,pid | awk '{if ( $2>N ) print $0}' | grep "$variable_users" | sort -k 1 | uniq -c -w 3 | sort -n -k 1)
 }
 u_count_c_inv(){
-  my_variable=my_variable=$(ps -eo user,times,group,uid,pid | awk '{if ( $2>N ) print $0}' | grep "$variable_users" | sort -k 1 | uniq -c -w 3 | sort -n -k 1 -r)
+  my_variable=$(ps -eo user,times,group,uid,pid | awk '{if ( $2>N ) print $0}' | grep "$variable_users" | sort -k 1 | uniq -c -w 3 | sort -n -k 1 -r)
 }
 u_pid(){
   my_variable=$(ps -eo etimes,user,group,uid,pid | grep -v /snap | tail -n+2 | awk '{if ( $1>"$N" ) print $0}' | tr -s ' ' ' ' | awk -F ' ' '{a[$2] = $5} END{for (i in a) print i, a[i]}' | sort -u | cut -d ' ' -f1 | grep "$variable_users")
@@ -132,7 +132,7 @@ u_c_inv(){
   my_variable=$(ps -eo user,times,group,uid,pid | awk '{if ( $2>N ) print $0}' | grep "$variable_users" | sort -k 1 | uniq -c -w 3 | sort -n -k 1 -r)
 }
 u_inv(){
-  my_variable=$(ps -eo etimes,user,group,uid,pid | grep -v /snap | tail -n+2 | awk '{if ( $1>"$N" ) print $0}' | tr -s ' ' ' ' | awk -F ' ' '{a[$2]} END{for (i in a) print i}' | sort -u -r | grep "$variable_users")
+  my_variable=$(ps -eo etimes,user,group,uid,pid | grep -v /snap | tail -n+2 | awk '{if ( $1>N ) print $0}' | tr -s ' ' ' ' | awk -F ' ' '{a[$2]} END{for (i in a) print i}' | sort -u -r | grep "$variable_users")
 }
 
 # Menú
@@ -202,75 +202,76 @@ else
 fi
 
 
-if [ "$usr" == 1 && "$u_variable" == 0 ];
+if [[ "$usr" == 1 && "$u_variable" == 0 ]]; then
   usr_
   if [ "$count" == 1 ]; then
     usr_count
-    if [ "$pid" == 1 && "$c_variable" == 0 ]; then
+    if [[ "$pid" == 1 && "$c_variable" == 0 ]]; then
       usr_count_pid
       if [ "$inv" == 1 ]; then
         usr_count_pid_inv
       fi
-    if [ "$inv" == 1 && "$pid" == 0 && "$c_variable" == 0 ]; then
+    fi
+    if [ "$inv" == 1 ] &&  [ "$pid"  == 0 ] && [ "$c_variable" == 0 ]; then
       usr_count_inv
     fi
-    if [ "$c_variable" == 1 && "$pid" == 0 ]; then
+    if [[ "$c_variable" == 1 && "$pid" == 0 ]]; then
       usr_count_c
       if [ "$inv" == 1 ]; then
         usr_count_c_inv
       fi
     fi
   fi
-  if [ "$pid" == 1 && "$count" == 0 && "$c_variable" == 0 ]; then
+  if [ "$pid" == 1 ] && [ "$count" == 0 ] && [ "$c_variable" == 0 ]; then
     usr_pid
     if [ "$inv" == 1 ]; then
       usr_pid_inv
     fi
   fi
-  if [ "$c_variable" == 1 && "$pid" == 0 && "$count" == 0 ]; then
+  if [ "$c_variable" == 1 ] && [ "$pid" == 0 ] && [ "$count" == 0 ]; then
     usr_c
     if [ "$inv" == 1]; then
       usr_c_inv
     fi
   fi
-  if [ "$inv" == 1 && "$c_variable" == 0 && "$pid" == 0 && "$count" == 0 ]; then
+  if [ "$inv" == 1 ] && [ "$c_variable" == 0 ] && [ "$pid" == 0 ] && [ "$count" == 0 ]; then
     usr_inv
   fi
 fi
 
-if [ "$u_variable" == 1 && "$usr" == 0 ]; 
+if [[ "$u_variable" == 1 && "$usr" == 0 ]]; then
   u_
   if [ "$count" == 1 ]; then
     u_count
-    if [ "$pid" == 1 && "$c_variable" == 0 ]; then
+    if [[ "$pid" == 1 && "$c_variable" == 0 ]]; then
       u_count_pid
       if [ "$inv" == 1 ]; then
         u_count_pid_inv
       fi
     fi
-    if [ "$inv" == 1 && "$pid" == 0 && "$c_variable" == 0 ]; then
+    if [[ "$inv" == 1 && "$pid" == 0 && "$c_variable" == 0 ]]; then
       u_count_inv
     fi
-    if [ "$c_variable" == 1 && "$pid" == 0 ]; then
+    if [[ "$c_variable" == 1 && "$pid" == 0 ]]; then
       u_count_c
       if [ "$inv" == 1]; then
         u_count_c_inv
       fi
     fi
   fi
-  if [ "$pid" == 1 && "$count" == 0 &&  "$c_variable" == 0 ]; then
+  if [ "$pid" == 1 ] && [ "$count" == 0 ] && [ "$c_variable" == 0 ]; then
     u_pid
     if [ "$inv" == 1 ]; then
       u_pid_inv
     fi
   fi
-  if [ "$pid" == 0 && "$count" == 0 &&  "$c_variable" == 1 ]; then
+  if [ "$pid" == 0 ] && [ "$count" == 0 ] && [ "$c_variable" == 1 ]; then
     u_c
     if [ "$inv" == 1]; then
       u_c_inv
     fi
   fi
-  if [ "$inv" == 1 && "$c_variable" == 0 && "$pid" == 0 && "$count" == 0 ]; then
+  if [ "$inv" == 1 ] && [ "$c_variable" == 0 ] && [ "$pid" == 0 ] && [ "$count" == 0 ]; then
     u_inv
   fi
 fi
