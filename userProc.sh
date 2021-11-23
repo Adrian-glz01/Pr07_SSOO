@@ -211,13 +211,12 @@ if [ "$usr" == 1 && "$u_variable" == 0 ];
       if [ "$inv" == 1 ]; then
         usr_count_pid_inv
       fi
-    fi
-    elif [ "$inv" == 1 && "$pid" == 0 && "$c_variable" == 0 ]; then
+    if [ "$inv" == 1 && "$pid" == 0 && "$c_variable" == 0 ]; then
       usr_count_inv
     fi
-    elif [ "$c_variable" == 1 && "$pid" == 0]; then
+    if [ "$c_variable" == 1 && "$pid" == 0 ]; then
       usr_count_c
-      if [ "$inv" == 1]; then
+      if [ "$inv" == 1 ]; then
         usr_count_c_inv
       fi
     fi
@@ -249,7 +248,7 @@ if [ "$u_variable" == 1 && "$usr" == 0 ];
         u_count_pid_inv
       fi
     fi
-    elif [ "$inv" == 1 && "$pid" == 0 && "$c_variable" == 0 ]; then
+    if [ "$inv" == 1 && "$pid" == 0 && "$c_variable" == 0 ]; then
       u_count_inv
     fi
     if [ "$c_variable" == 1 && "$pid" == 0 ]; then
