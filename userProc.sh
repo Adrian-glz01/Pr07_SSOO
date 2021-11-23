@@ -170,12 +170,10 @@ else
           Error_message
           exit 1
         fi
-        
-        for i in "$user_set";do
-          shift 
-          users_set=("$1")
+        while [ "$2" != "" ]; do
+          shift
+          users_set+=("$1" "${users_set[@]}")
         done
-        
         shift
         ;;
       -count )
