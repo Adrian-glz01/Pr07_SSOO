@@ -99,7 +99,8 @@ usr_inv(){
 
 # Funciones cuando se filtra por usuarios especificados
 u_(){
-  my_variable=$(ps -eo times,user,group,uid,pid | grep -v /snap | tail -n+2 | awk '{if ( $1>N ) print $0}' | tr -s ' ' ' ' | awk -F ' ' '{a[$2]} END{for (i in a) print i}' | sort -u | grep "$variable_users")
+  echo "$users_set"
+  # my_variable=$(ps -eo times,user,group,uid,pid | grep -v /snap | tail -n+2 | awk '{if ( $1>N ) print $0}' | tr -s ' ' ' ' | awk -F ' ' '{a[$2]} END{for (i in a) print i}' | sort -u | grep "$variable_users")
 }
 u_count(){
   my_variable=$(ps -eo times,user,group | grep -v /snap | tail -n+2 | awk '{if ( $1>N ) print $0}' | tr -s ' ' ' ' | awk -F ' ' '{a[$2] += 1} END{for (i in a) print a[i], i}' | sort -n | grep "$variable_users")
@@ -169,9 +170,9 @@ else
           Error_message
           exit 1
         fi
-        while [ "$2" != "" ]; do
+        for i in "$user_set";do 
+          users_set=($2 "${users_set[@]}")
           shift
-          users_set=("$1" "${users_set[@]}")
         done
         
         shift
