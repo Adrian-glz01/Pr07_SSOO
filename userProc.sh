@@ -165,15 +165,15 @@ else
         ;;
       -u )
         u_variable=1
-        if [ "$2" == "-*" ]; then
+        if [ "$2" == "" ]; then
           Error_message
           exit 1
-        else 
-          while [ "$1" != "-*" ]; do
-            shift
-            users_set=($1 "${users_set[@]}")
-          done
         fi
+        while [ "$2" != "" ]; do
+          shift
+          users_set=("$1" "${users_set[@]}")
+        done
+        
         shift
         ;;
       -count )
